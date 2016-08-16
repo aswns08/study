@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.daejeon.mybatis.comment.dao.CommentDao">
+
+	<insert id="commentWrite" parameterType="comment">
+		insert into comments values(comment_seq.nextval,#{id},#{comment_Content},sysdate,#{article_Num})
+	</insert>
+	
+	<select id="commentRead" parameterType="HashMap" resultType="comment">
+		select * from (select rownum rm,human.* from (select * from comments where article_Num=#{article_Num} order by comment_Num) human) where rm between 1 and #{endRow}
+	</select>
+
+</mapper>

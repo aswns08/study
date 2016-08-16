@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.daejeon.mybatis.bbs.dao.BBSDao">
+
+	<select id="getArticleCount" resultType="Integer">
+		select count(*) from bbs
+	</select>
+
+	<select id="getArticles" parameterType="HashMap" resultType="article">
+		select * 
+	  from (select rownum rm,human.* from 
+	         (select article_num, id,title,depth,hit,
+	         write_date from bbs order by group_id desc, position) human) 		
+	  where rm between #{startRow} and #{endRow}
+	</select>
+	
+	<select id="login_check" parameterType="String" resultType="String">
+		select pwd from login where id =#{id}
+	</select>
+	
+	<select id="content" parameterType="Integer" resultType="article">
+		select * from bbs where article_Num=#{article_Num}
+	</select>
+	
+	<insert id="insertArticle" parameterType="article">
+		insert into BBS values(bbs_seq.nextval,#{id},#{title},#{content},0,0,bbs_seq.currval,0,sysdate,#{fname})
+	</insert>
+	
+	<delete id="deleteArticle" parameterType="Integer">
+		delete from BBS where article_Num=#{article_Num}
+	</delete>
+	
+	<select id="getUpdateForm" parameterType="Integer" resultType="article">
+		select article_Num, title, content, fname from BBS where article_Num=#{article_Num}
+	</select>
+	
+	<update id="update" parameterType="article">
+		update BBS set title=#{title}, content=#{content}
+		<if test="fname != null and fname != '' ">
+		, fname=#{fname}
+		</if>
+		where article_Num=#{article_Num}
+	</update>
+	
+	<update id="updatePosition" parameterType="article" >
+		update BBS set position=position+1 where group_Id=#{group_Id} and position>#{position}
+	</update>
+	
+	<insert id="reply" parameterType="article">
+		insert into BBS values(bbs_seq.nextval,#{id},#{title},#{content},#{depth}+1,0,#{group_Id},#{position}+1,sysdate,#{fname})
+	</insert>
+	
+	<select id="getCommentCount" parameterType="Integer" resultType="Integer">
+		select count(*) from comments where article_Num=#{article_Num}
+	</select>
+
+</mapper>
