@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+  <display-name>BBSServlet</display-name>
+  
+    <servlet>
+  	<servlet-name>bbsServlet</servlet-name>
+  	<servlet-class>kr.ac.daejeon.BBSServlet</servlet-class>
+  	<init-param>
+  		<param-name>bbs_properties</param-name>
+  		<param-value>D:\workspace_EE\BBSServlet\WebContent\bbs.properties</param-value>
+  	</init-param>
+  	<multipart-config>
+  		<location>d:\temp</location>
+  		<!-- 아래의 엘리먼트는 순서를 지켜줘야 한다. -->
+  		<!-- file-size의 제한이 없다. -->
+  		<max-file-size>-1</max-file-size>
+  		<!-- request하는데 제한이 없다. -->
+  		<max-request-size>-1</max-request-size>
+  		<file-size-threshold>1024</file-size-threshold>
+  	</multipart-config>
+  </servlet>
+
+<servlet-mapping>
+	<servlet-name>bbsServlet</servlet-name>
+	<url-pattern>*.daejeon</url-pattern>
+</servlet-mapping>
+  
+</web-app>
