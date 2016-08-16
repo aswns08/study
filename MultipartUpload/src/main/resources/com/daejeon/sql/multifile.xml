@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.daejeon.multipart.dao.MultiFileUploadDao">
+
+	<select id="read" resultType="article">
+		select * from board order by article_Num desc
+	</select>
+
+	<insert id="write" parameterType="String">
+		insert into board values(board_seq.nextval, #{content}, sysdate)
+	</insert>
+	
+	<insert id="insertFileUpload" parameterType="file">
+		insert into filelist values(file_seq.nextval, #{originFileName}, #{saveFileName}, #{fileSize}, board_seq.currval)
+	</insert>
+	
+	<select id="content" parameterType="Integer" resultType="file">
+		select * from filelist where article_Num=#{article_Num}
+	</select>
+	
+	
+
+</mapper>
