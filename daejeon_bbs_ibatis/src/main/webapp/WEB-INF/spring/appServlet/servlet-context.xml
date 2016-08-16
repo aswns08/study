@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+	<!-- 톰켓8버전은 7버전과 비교해서 BasicDataSource의 패키지명이 차이가 있음 -->
+	<!--
+ 	<bean id="dataSource" class="org.apache.tomcat.dbcp.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="username" value="human" />
+		<property name="password" value="1234" />
+		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:XE" />
+	</bean> 
+	-->
+	
+	<!-- 
+	<bean id="dataSource" class="org.apache.tomcat.dbcp.dbcp2.BasicDataSource"
+	 p:driverClassName="oracle.jdbc.driver.OracleDriver"
+	 p:username="human"
+	 p:password="1234"
+	 p:url="jdbc:oracle:thin:@127.0.0.1:1521:XE" destroy-method="close" />
+	  -->
+	  
+ 	 <!-- 스프링에서 제공하는 DriverManagerDataSource 는 커넥션 풀을 지원하지 않음. -->
+<!--	 
+	 <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+	 p:driverClassName="oracle.jdbc.driver.OracleDriver"
+	 p:username="human"
+	 p:password="1234"
+	 p:url="jdbc:oracle:thin:@127.0.0.1:1521:XE" /> 
+-->
+	 
+	 <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+	 	<property name="maxUploadSize" value="100000000" />
+	 </bean>
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+		<property name="order" value="2" />
+	</bean>
+	
+	<bean id="download" class="com.daejeon.bbs.service.DownLoadViewImpl" />
+	
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" >
+		<property name="order" value="1" />
+	</bean>
+	
+ 	<context:component-scan base-package="com.daejeon.bbs" />
+	
+	
+	
+</beans>

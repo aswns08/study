@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+		
+	<!-- 톰켓8버전은 7버전과 비교해서 BasicDataSource의 패키지명이 차이가 있음 -->
+	<!-- tomcat8 : class="org.apache.tomcat.dbcp.dbcp2.BasicDataSource" -->
+	<!-- tomcat7 : class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" -->
+	<bean id="dataSource" class="org.apache.tomcat.dbcp.dbcp.BasicDataSource"
+	 p:driverClassName="core.log.jdbc.driver.OracleDriver"
+	 p:username="human"
+	 p:password="1234"
+	 p:url="jdbc:oracle:thin:@127.0.0.1:1521:XE" destroy-method="close" />
+	 
+	 <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean"
+	 p:configLocation="/WEB-INF/ibatis/sqlMapConfig.xml">
+	 <!-- <property name="configLocation" value="/WEB-INF/ibatis/sqlMapConfig.xml" /> -->
+	 <property name="dataSource" ref="dataSource" />
+	 </bean>	
+
+	<bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate"
+	p:sqlMapClient-ref="sqlMapClient" />
+	
+		
+</beans>
