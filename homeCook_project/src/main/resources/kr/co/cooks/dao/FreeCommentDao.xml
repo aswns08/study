@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cooks.dao.FreeCommentDao">
+
+	<insert id="commentWrite" parameterType="commentVO">
+		insert into FREE_COMMENTS values(free_seq.NEXTVAL, #{id}, #{fcomment_content}, sysdate, #{free_num})
+	</insert>
+	
+	<select id="commentRead" parameterType="HashMap" resultType="freeCommentUserVO">
+		select * from (select rownum rm, human.* from 
+		(select f.*, s.name 
+		 from FREE_COMMENTS f left outer join USERS s on f.id=s.id
+		 where free_num=#{free_num} order by fcomment_num) human) 
+		where rm between 1 and #{endRow}	
+	</select>
+	
+	<delete id="commentDelete" parameterType="Integer">
+		delete from FREE_COMMENTS where fcomment_num=#{fcomment_num}
+	</delete>
+
+</mapper>

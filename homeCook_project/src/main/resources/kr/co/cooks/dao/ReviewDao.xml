@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cooks.dao.ReviewDao">
+  
+	<resultMap type="ReviewFileListVO" id="reviewFileListMap">
+		<id column="RE_NUM" property="re_Num" />
+		<result column="ID" property="id" />
+		<result column="RE_TITLE" property="re_Title" />
+		<result column="RE_CONTENT" property="re_Content" />
+		<result column="RE_DATE" property="re_Date" />
+		<result column="RE_GRADE" property="re_Grade" />
+		<result column="RE_DEPT" property="re_Dept" />
+		<result column="RE_POSITION" property="re_Position" />
+		<result column="F_NUM" property="f_Num" />
+		<result column="SAVEFILENAME" property="saveFileName" />
+		<result column="NAME" property="name" />
+	</resultMap>
+ 
+ <!-- 왜 쓰는지 모르겠음...
+	<resultMap type="map" id="reviewFileList2Map">
+		<id column="RE_NUM" property="re_Num" />
+		<result column="ID" property="id" />
+		<result column="RE_CONTENT" property="re_Content" />
+		<result column="RE_DATE" property="re_Date" />
+		<result column="RE_GRADE" property="re_Grade" />
+		<result column="RE_DEPT" property="re_Dept" />
+		<result column="RE_POSITION" property="re_Position" />
+		<result column="F_NUM" property="f_Num" />
+		<result column="FILE_NUM" property="file_Num" />
+		<result column="ORIGINFILENAME" property="originFileName" />
+		<result column="SAVEFILENAME" property="saveFileName" />
+		<result column="FILESIZE" property="fileSize" />
+	</resultMap>
+ -->
+
+	<select id="totalSize" resultType="Integer">
+		select count(RE_NUM) FROM REVIEW
+	</select>
+
+<!-- 리뷰리스트만 가져오는 쿼리.	
+	<select id="getReviewList" parameterType="Map" resultType="reviewVO">
+		select RE_NUM, ID, RE_CONTENT, RE_DATE, RE_GRADE, RE_DEPT, RE_POSITION, F_NUM
+		FROM REVIEW
+		<if test="pageSize > 0">
+			where rownum between #{startRow} and #{pageSize}
+		</if>
+		ORDER BY RE_NUM DESC
+	</select>
+ -->
+	
+	<!-- 리뷰리스트 , 리뷰파일리스트 조인 쿼리 -->
+	<select id="getReviewList" parameterType="Map" resultMap="reviewFileListMap">
+		select *
+		from (select rownum rm, reviewList.*, USERS.NAME
+			  from (select T1.RE_NUM, T1.ID, T1.RE_TITLE, REPLACE(T1.RE_CONTENT, CHR(10), '&lt;br /&gt;') AS RE_CONTENT, T1.RE_DATE, T1.RE_GRADE, T1.RE_DEPT, T1.RE_POSITION, T1.RE_GROUPID, T1.F_NUM,
+							T2.SAVEFILENAME
+				from REVIEW T1 LEFT OUTER JOIN REVIEW_FILELIST T2
+				ON T1.RE_NUM = T2.RE_NUM
+				ORDER BY RE_NUM DESC ) reviewList LEFT OUTER JOIN USERS
+										ON reviewList.ID = USERS.ID)
+		<if test="pageSize > 0">
+			where rm between #{startRow} and #{pageSize}
+		</if>
+		
+	</select>
+	
+	<!-- 특정 음식에 대한 리뷰리스트 , 리뷰파일리스트 조인 쿼리 -->
+	<select id="getFoodReviewList" parameterType="Map" resultMap="reviewFileListMap">
+		select *
+		from (select rownum rm, reviewList.*, USERS.NAME 
+			  from (select T1.RE_NUM, T1.ID, T1.RE_TITLE, REPLACE(T1.RE_CONTENT, CHR(10), '&lt;br /&gt;') AS RE_CONTENT, T1.RE_DATE, T1.RE_GRADE, T1.RE_DEPT, T1.RE_POSITION, T1.RE_GROUPID, T1.F_NUM,
+							T2.SAVEFILENAME
+				from REVIEW T1 LEFT OUTER JOIN REVIEW_FILELIST T2
+				ON T1.RE_NUM = T2.RE_NUM
+				where T1.F_NUM = #{f_num}
+				ORDER BY RE_NUM DESC ) reviewList LEFT OUTER JOIN USERS
+										ON reviewList.ID = USERS.ID)
+		<if test="pageSize > 0">
+			where rm between #{startRow} and #{pageSize}
+		</if>
+		
+	</select>
+	
+	<insert id="insertReview" parameterType="reviewVO">
+		insert into REVIEW values(review_seq.NEXTVAL, #{id}, #{re_Title}, #{re_Content}, sysdate, #{re_Grade}, #{re_Dept}, #{re_Position}, #{re_GroupId}, #{f_Num})
+	</insert>
+	
+	<insert id="insertFileUpload" parameterType="reviewFileVO">
+		insert into REVIEW_FILELIST values(reviewfile_seq.NEXTVAL, #{originFileName}, #{saveFileName}, #{fileSize}, review_seq.CURRVAL)
+	</insert>
+	
+	<select id="contentReview" parameterType="Integer" resultType="ReviewFileListVO">
+		select reviewList.*, USERS.NAME 
+		from (select T1.RE_NUM, T1.ID, T1.RE_TITLE, REPLACE(T1.RE_CONTENT, CHR(10), '&lt;br /&gt;') AS RE_CONTENT, T1.RE_DATE, T1.RE_GRADE, T1.RE_DEPT, T1.RE_POSITION, T1.RE_GROUPID, T1.F_NUM,
+					 T2.SAVEFILENAME
+			  from REVIEW T1 LEFT OUTER JOIN REVIEW_FILELIST T2 
+				   ON T1.RE_NUM = T2.RE_NUM) reviewList LEFT OUTER JOIN USERS
+											 ON reviewList.ID = USERS.ID
+		WHERE reviewList.RE_NUM = #{re_Num}
+		
+	</select>
+	
+
+	<delete id="deleteReview" parameterType="Integer">
+		delete
+		from REVIEW
+		where RE_NUM = #{re_Num}
+	</delete>
+	
+	<delete id="deleteReviewPhoto" parameterType="Integer">
+		delete
+		from REVIEW_FILELIST
+		where RE_NUM = #{re_Num}
+	</delete>
+	
+	<select id="getUpdateReviewForm" parameterType="Integer" resultType="reviewVO">
+		select *
+		from REVIEW
+		where RE_NUM = #{re_Num}
+	</select>
+	
+	<update id="updateReview" parameterType="reviewVO">
+		update REVIEW
+		set RE_TITLE=#{re_Title}, RE_CONTENT=#{re_Content}
+		where RE_NUM=#{re_Num}
+	</update>
+	
+	<update id="updateFileUpload" parameterType="reviewFileVO">
+		update REVIEW_FILELIST
+		set ORIGINFILENAME=#{originFileName}, SAVEFILENAME=#{saveFileName}, FILESIZE=#{fileSize}
+		where RE_NUM=#{re_Num}
+	</update>	
+	
+	
+	<delete id="deleteResReview" parameterType="String">
+		 delete from REVIEW 
+		 where f_num in (select distinct f.f_num
+		 from food f left outer join RESTAURANT r on f.r_num = r.r_num
+		 where r.r_num=#{r_Num})
+	</delete>
+	
+	<delete id="deleteResReviewPhoto" parameterType="String">
+		delete from REVIEW_FILELIST
+    	WHERE re_num in (
+    	select re_num from REVIEW
+		where f_num in (select distinct f.f_num
+		from food f left outer join RESTAURANT r 
+		on f.r_num = r.r_num
+		where r.r_num=#{r_Num}))
+	</delete>
+	
+	<delete id="deleteFoodReview" parameterType="Integer">
+      delete from REVIEW where f_num =#{f_num}
+   </delete>
+   
+   <delete id="deleteFoodReviewPhoto" parameterType="Integer">
+      delete from REVIEW_FILELIST
+       WHERE re_num in (select re_num from REVIEW where f_num=#{f_num}) 
+   </delete>
+	
+
+</mapper>

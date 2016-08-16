@@ -1,0 +1,103 @@
+/*!
+ * Start Bootstrap - Shop Homepage HTML Template (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+body {
+    padding-top: 200px; Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes.
+}
+
+.control-label{
+	text-align: center;
+}
+.qty-select-form{
+	width:60px;
+	height: 30px;
+}
+.menuinfo-text td{
+	text-align: left;
+	padding-left: 50px;
+}
+
+
+.themline{
+	width: 100%;
+	height: 30px;
+	background: #FFE4E1;
+	margin-top: 80px;	
+}
+
+.btn{
+	margin-top: 20px;
+	margin-right: 20px;
+}
+
+.origin-text{
+	margin-top: 30px;
+}
+.origincountry{
+	width: 1140px;
+	height: 100px;
+	border: solid 2px #000000;
+}
+.product-list-text{
+	margin-top: 20px;
+}
+.product{
+	width: 350px;
+	height: 150px;
+	border: solid 2px #000000;
+}
+
+.product-detail{
+	width: 750px;
+	height: 150px;
+	border: solid 2px #000000;
+}
+
+.menu-info{
+	padding-top: -20px;
+	padding-left: 55%;	
+}
+
+.menuinfo-text{
+	width: 500px;
+	height: 164px;
+	border-radius: 25px;
+	background: #f8f8f8;
+}
+
+
+
+.caption {
+/*     height: 130px; */
+    overflow: hidden;
+}
+
+.caption h4 {
+    white-space: nowrap;
+}
+
+.thumbnail img {
+    width: 100%;
+}
+
+.ratings {
+    padding-right: 10px;
+    padding-left: 10px;
+    color: #d17581;
+}
+
+.thumbnail {
+    padding: 0;
+}
+
+.thumbnail .caption-full {
+    padding: 9px;
+    color: #333;
+}
+
+footer {
+    margin: 50px 0;
+}

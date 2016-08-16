@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cooks.dao.RecipeCommentDao">
+
+	<insert id="commentWrite" parameterType="commentVO">
+		insert into RECIPE_COMMENTS values(comment_seq.NEXTVAL, #{id}, #{rcomment_content}, sysdate, #{recipe_num})
+	</insert>
+	
+	<select id="commentRead" parameterType="HashMap" resultType="recipeCommentUserVO">
+		select * from (select rownum rm, human.* from 
+		(select r.*, s.name 
+		 from RECIPE_COMMENTS r left outer join USERS s on r.id=s.id
+		 where recipe_num=#{recipe_num} order by rcomment_num) human) 
+		where rm between 1 and #{endRow}	
+	</select>
+	
+	<delete id="commentDelete" parameterType="Integer">
+		delete from RECIPE_COMMENTS where rcomment_num=#{rcomment_num}
+	</delete>
+
+</mapper>

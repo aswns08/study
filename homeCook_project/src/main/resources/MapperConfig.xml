@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<typeAliases>
+		<typeAlias alias="userVO" type="kr.co.cooks.vo.UserVO"/>
+		
+		<typeAlias alias="reviewVO" type="kr.co.cooks.vo.ReviewVO"/>
+		<typeAlias alias="reviewFileVO" type="kr.co.cooks.vo.ReviewFileVO"/>
+		
+		<typeAlias alias="noticeVO" type="kr.co.cooks.vo.NoticeVO"/>
+		
+		<typeAlias alias="qnaVO" type="kr.co.cooks.vo.QNAVO"/>
+		
+		<typeAlias alias="restaurantVO" type="kr.co.cooks.vo.RestaurantVO"/>
+		
+		<typeAlias alias="recipeVO" type="kr.co.cooks.vo.RecipeBoardVO"/>
+		<typeAlias alias="commentVO" type="kr.co.cooks.vo.RecipeCommentVO"/>
+		<typeAlias alias="recipeLikeVO" type="kr.co.cooks.vo.RecipeLikeVO"/>
+		<typeAlias alias="recipeBoardUserVO" type="kr.co.cooks.vo.RecipeBoardUserVO"/>
+		<typeAlias alias="recipeCommentUserVO" type="kr.co.cooks.vo.RecipeCommentUserVO"/>
+		
+		<typeAlias alias="freeVO" type="kr.co.cooks.vo.FreeBoardVO"/>
+		<typeAlias alias="freeBoardUserVO" type="kr.co.cooks.vo.FreeBoardUserVO"/>
+		
+		<typeAlias alias="foodVO" type="kr.co.cooks.vo.FoodVO"/>
+		<typeAlias alias="foodMainFileVO" type="kr.co.cooks.vo.FoodMainFileListVO"/>
+		<typeAlias alias="foodMainFileMapVO" type="kr.co.cooks.vo.FoodMainFileListMapVO"/>
+		<typeAlias alias="foodFileVO" type="kr.co.cooks.vo.FoodFileListVO"/>
+		
+		<typeAlias alias="storageMapVO" type="kr.co.cooks.vo.StorageMapVO"/>		
+	
+		<typeAlias alias="hotMenuVO" type="kr.co.cooks.vo.HotMenuVO"/>
+		
+		<typeAlias alias="userOrderVO" type="kr.co.cooks.vo.UserOrderVO"/>	
+	</typeAliases>
+	
+</configuration>

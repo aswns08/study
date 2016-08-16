@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cooks.dao.RecipeBoardDao">
+
+	<select id="totalSize" resultType="Integer">
+		select count(*) from RECIPE_BOARD
+	</select>
+
+	<select id="recipeBoardList" parameterType="HashMap" resultType="recipeBoardUserVO">
+		select *
+		from (select rownum rm, recipeBoardList.*
+			  from (select r.RECIPE_NUM, r.ID, r.RECIPE_TITLE, r.RECIPE_HIT, r.RECIPE_DATE, r.RECIPE_LIKE, s.NAME
+					from RECIPE_BOARD r left outer join USERS s 
+					on r.id=s.id order by RECIPE_NUM desc) recipeBoardList)
+		where rm between #{startRow} and #{pageSize}
+	</select>
+
+	<insert id="write" parameterType="recipeVO">
+		insert into RECIPE_BOARD values(recipe_seq.NEXTVAL, #{id}, #{recipe_title},
+		#{recipe_content}, sysdate, 0, 0)
+	</insert>
+
+	<select id="content" parameterType="Integer" resultType="recipeBoardUserVO">
+		select r.RECIPE_NUM, r.ID, r.RECIPE_TITLE, REPLACE(r.RECIPE_CONTENT, CHR(10), '&lt;br /&gt;') AS RECIPE_CONTENT, r.RECIPE_DATE, r.RECIPE_HIT, r.RECIPE_LIKE, s.NAME
+		from RECIPE_BOARD r left outer join USERS s on r.id=s.id
+		where r.recipe_num=#{recipe_num}
+	</select>	
+
+	<select id="getUpdateRecipe" parameterType="Integer" resultType="recipeBoardUserVO">
+		select r.*, s.name
+		from RECIPE_BOARD r left outer join USERS s on r.id=s.id
+		where recipe_num=#{recipe_num}
+	</select>
+
+	<update id="update" parameterType="recipeVO">
+		update RECIPE_BOARD set
+		recipe_title=#{recipe_title}, recipe_content= #{recipe_content}
+		where
+		recipe_num=#{recipe_num}
+	</update>
+
+	<delete id="delete" parameterType="Integer">
+		delete from RECIPE_BOARD where
+		recipe_num=#{recipe_num}
+	</delete>
+
+	<select id="getCommentCount" parameterType="Integer" resultType="Integer">
+		select count(*) from RECIPE_COMMENTS where recipe_num=#{recipe_num}
+	</select>
+
+	<update id="addLike" parameterType="Integer">
+		update RECIPE_BOARD set
+		recipe_like=recipe_like+1
+		where recipe_num=#{recipe_num}
+	</update>
+
+	<update id="minusLike" parameterType="Integer">
+		update RECIPE_BOARD set
+		recipe_like=recipe_like-1
+		where recipe_num=#{recipe_num}
+	</update>
+
+	<select id="getRecipeLike" parameterType="Integer" resultType="Integer">
+		select recipe_like from RECIPE_BOARD where recipe_num=#{recipe_num}
+	</select>
+
+	<insert id="addLikePeople" parameterType="HashMap">
+		insert into RECIPE_LIKE
+		values(#{recipe_num}, #{id})
+	</insert>
+
+	<delete id="minusLikePeople" parameterType="HashMap">
+		delete from RECIPE_LIKE
+		where recipe_num=#{recipe_num} and id=#{id}
+	</delete>
+
+	<select id="checkLikePeople" parameterType="HashMap" resultType="Integer">
+		select count(*) from recipe_like
+		where recipe_num=#{recipe_num} and id=#{id}
+	</select>
+
+	<delete id="likeDelete" parameterType="Integer">
+		delete from RECIPE_LIKE
+		where recipe_num=#{recipe_num}
+	</delete>
+
+	<update id="recipeHit" parameterType="Integer">
+		update RECIPE_BOARD set
+		recipe_hit=recipe_hit+1
+		where recipe_num=#{recipe_num}
+	</update>
+
+	<select id="recipeAllCommentCount" parameterType="Integer"
+		resultType="Integer">
+		select count(RCOMMENT_NUM) from RECIPE_COMMENTS
+		where recipe_num=#{recipe_num}
+	</select>
+	
+	<delete id="recipeAllCommentDelete" parameterType="Integer">
+		delete from RECIPE_COMMENTS
+		where recipe_num=#{recipe_num}
+	</delete>
+
+</mapper>

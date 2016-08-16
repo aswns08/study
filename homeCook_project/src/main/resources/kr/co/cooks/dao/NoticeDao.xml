@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cooks.dao.NoticeDao">
+
+	<select id="totalSize" resultType="Integer">
+		select count(*) from notice_board
+	</select>
+	
+	<select id="getNoticeList" parameterType="HashMap" resultType="noticeVO">
+		select * 
+		from (select rownum rm, human.* from
+			(select no_num, id, no_title, no_date, no_hit 
+			from notice_board
+			order by no_num desc) human)
+			where rm between #{startRow} and #{pageSize}
+	</select>
+	
+	<insert id="noticeWrite" parameterType="noticeVO">
+		insert into notice_board values(notice_seq.nextval,#{id},#{no_Title},#{no_Content},sysdate,0)
+	</insert>
+	
+	<update id="noticeHit" parameterType="Integer">
+		update notice_board set no_Hit=no_Hit+1
+		where no_Num=#{no_Num}
+	</update>
+	
+	<select id="noticeContent" parameterType="Integer" resultType="noticeVO">
+		select no_Num, id, no_Title, REPLACE(no_Content, CHR(10), '&lt;br /&gt;') AS no_Content, no_Date, no_Hit
+		from notice_board where no_Num=#{no_Num}
+	</select>
+		
+	<select id="getNoticeUpdate" parameterType="Integer" resultType="noticeVO">
+		select id, no_Num, no_Title, no_Content from notice_board where no_Num=#{no_Num}	
+	</select>
+	
+	<update id="noticeUpdate" parameterType="noticeVO">
+		update notice_board
+		set no_Title=#{no_Title}, no_Content=#{no_Content}
+		where no_num=#{no_Num}
+	</update>
+	
+	<delete id="noticeDelete" parameterType="Integer">
+		delete from notice_board where no_num=#{no_num}
+	</delete>
+	
+</mapper>

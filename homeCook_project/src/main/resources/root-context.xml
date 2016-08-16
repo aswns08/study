@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+
+	<bean id="dataSource" class="org.apache.tomcat.dbcp.dbcp2.BasicDataSource"
+		p:driverClassName="oracle.jdbc.driver.OracleDriver" p:username="team3"
+		p:password="eowjseo" p:url="jdbc:oracle:thin:@test.callon.kr:1521:orcl"
+		destroy-method="close" />
+		
+		<!-- 
+		로컬에서 tomcat8로 서버를 돌리는 경우.
+		<bean id="dataSource" class="org.apache.tomcat.dbcp.dbcp2.BasicDataSource"  
+		로컬이 아닌 서버에 올릴 경우에는 클래스를 아래 dbcp에서 사용.
+		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" 
+		--> 
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath:kr/co/cooks/*Dao.xml" />
+		<property name="configLocation" value="classpath:MapperConfig.xml" />
+		<property name="typeAliasesPackage" value="kr.co.cooks.vo" />
+	</bean>
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="kr.co.cooks.dao" />
+	</bean>
+
+</beans>
+
+

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cooks.dao.FoodDao">
+
+	<select id="getArticles" parameterType="String" resultType="foodMainFileMapVO">
+		select f.f_num, f.f_name, f.f_price, f.r_num, l.savefilename
+		from FOOD f left outer join FOOD_MAINFILELIST l on f.f_num=l.f_num
+		where f.r_num=#{r_num}
+		order by f_num
+	</select>
+
+	<select id="getFoodDetail" parameterType="Integer" resultType="foodMainFileMapVO">
+		select f.*, trunc(f.f_price*0.05) as f_mileage, l.savefilename
+		from FOOD f left outer join
+		FOOD_MAINFILELIST l on f.f_num=l.f_num
+		where f.f_num=#{f_num}
+	</select>
+
+	<select id="getFoodFiles" parameterType="Integer" resultType="foodFileVO">
+		select saveFileName
+		from FOOD_FILELIST
+		where f_num=#{f_num}
+	</select>
+	
+	<select id="getResInfo" parameterType="String" resultType="restaurantFileListVO">
+		select r.*, l.saveFileName 
+		from RESTAURANT r left outer join RESTAURANT_FILELIST l on r.r_num=l.r_num
+		where r.r_num = #{r_num}	
+	</select>
+
+	<select id="getFoodCount" parameterType="String" resultType="Integer">
+		select count(*) from FOOD where r_num=#{r_num}
+	</select>
+
+	<insert id="addFood" parameterType="foodVO">
+		insert into FOOD
+		values(food_seq.NEXTVAL, #{f_name}, #{f_price}, #{f_ex_date},
+		#{f_recipe}, #{f_ingredients}, #{f_origin}, null, 0, #{r_num}, sysdate)
+	</insert>
+
+	<insert id="addFoodMainFile" parameterType="foodMainFileVO">
+		insert into
+		FOOD_MAINFILELIST values(foodfile_seq.NEXTVAL, #{originFileName},
+		#{saveFileName}, #{fileSize}, food_seq.CURRVAL)
+	</insert>
+
+	<insert id="addFoodFile" parameterType="foodFileVO">
+		insert into FOOD_FILELIST
+		values(foodfile_seq.NEXTVAL, #{originFileName}, #{saveFileName},
+		#{fileSize}, food_seq.CURRVAL)
+	</insert>
+	
+	<delete id="deleteFood" parameterType="Integer">
+		delete from FOOD
+		where f_num = #{f_num}
+	</delete>
+	
+	<delete id="deleteFoodMainFile" parameterType="Integer">
+		delete from FOOD_MAINFILELIST
+		where f_num = #{f_num}
+	</delete>
+	
+	<delete id="deleteFoodFiles" parameterType="Integer">
+		delete from FOOD_FILELIST
+		where f_num = #{f_num}
+	</delete>
+	
+	<insert id="addOrderNum" parameterType="String">
+		insert into ORDERS_NUM values(order_seq.NEXTVAL, #{userId})
+	</insert>
+	
+	<insert id="addOrders" parameterType="HashMap">
+		insert into	ORDERS values(#{f_num}, order_seq.CURRVAL, #{r_num}, sysdate, #{o_count}, #{o_price})
+	</insert>
+	
+	<update id="minusMileage" parameterType="HashMap">
+		update USERS set mileage = mileage-#{mileage}
+		where id = #{userId}
+	</update>
+	
+	<update id="addMileage" parameterType="HashMap">
+		update USERS set mileage = mileage+#{resultPrice}
+		where id = #{userId}
+	</update>
+	
+	<update id="addFoodCount" parameterType="Integer">
+		update FOOD set f_count = f_count+1
+		where f_num = #{f_num}
+	</update>
+	
+	<select id="getRecentFood" resultType="foodMainFileMapVO">
+		select *
+		from (select rownum rm, human.* from
+		(select f.f_num, f.f_name, f.f_price, f.r_num, f_regi_date, l.savefilename
+		from FOOD f left outer join FOOD_MAINFILELIST l on f.f_num=l.f_num
+		order by f_regi_date desc) human)
+		where rm between 1 and 6	
+		order by rm 
+	</select>
+	
+	<select id="foodSearchCount" parameterType="String"  resultType="Integer">
+		select count(*) from FOOD
+		where f_name like #{f_name}	
+	</select>
+	
+	<select id="foodSearch" parameterType="String" resultType="foodMainFileMapVO">
+		select f.f_num, f.f_name, f.f_price, f.r_num, l.savefilename
+		from FOOD f left outer join FOOD_MAINFILELIST l on f.f_num=l.f_num
+		where f.f_name like #{f_name}
+	</select>
+	
+	<insert id="addJang" parameterType="HashMap">
+		insert into STORAGE values(storage_seq.NEXTVAL, #{userId}, #{f_num}, #{f_count}, #{f_price})
+	</insert>
+	
+	<select id="showJang" parameterType="String"  resultType="storageMapVO" >
+	  	select f.f_name, f.r_num, s.s_num, s.f_num, s.s_count, trunc(s.s_price*0.05) as s_mileage, s.s_price, l.SAVEFILENAME
+	    from FOOD f, STORAGE s, FOOD_MAINFILELIST l
+	    where s.id=#{userId}
+	    and f.f_num=s.f_num
+	    and s.f_num=l.f_num
+	    order by s.s_num
+	</select>
+	
+	<delete id="deleteJangFood" parameterType="Integer">
+		delete from STORAGE
+		where s_num=#{s_num}
+	</delete>
+
+</mapper>

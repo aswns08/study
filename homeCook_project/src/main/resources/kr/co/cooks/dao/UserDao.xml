@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cooks.dao.UserDao">
+
+	<select id="signUpEmailCheck" parameterType="String" resultType="String">
+		select ID
+		from USERS
+		where ID = #{signUp_email}
+	</select>
+
+	<select id="existUser" parameterType="Map" resultType="UserVO">
+		select ID, PASSWORD, NAME, ADDRESS, PHONE, USER_LEVEL, MILEAGE
+		from USERS
+		where ID = #{email} AND PASSWORD=#{password}
+	</select>
+	
+	<insert id="signUpUser" parameterType="UserVO">
+		insert into USERS values(#{id}, #{password}, #{name}, #{address}, #{phone}, #{user_Level}, 1000 )
+	</insert>
+	
+	<update id="userUpdate" parameterType="UserVO">
+		update USERS
+		set NAME=#{name}, ADDRESS=#{address}, PHONE=#{phone}
+		where ID=#{id}
+	</update>
+	
+	<update id="changePwd" parameterType="Map">
+		update USERS
+		set PASSWORD=#{new_pwd}
+		where ID=#{email}
+	</update>
+	
+	<select id="orderList" parameterType="String" resultType="userOrderVO">
+		select O1.O_NUM, O1.ID,
+				O2.F_NUM, O2.R_NUM, O2.O_DATE, O2.O_COUNT, O2.O_PRICE,
+				F.F_NAME, F.F_PRICE
+		from ORDERS_NUM O1, ORDERS O2, FOOD F
+		where O1.O_NUM = O2.O_NUM
+		and O1.ID = #{userId}
+		and O2.F_NUM = F.F_NUM
+	</select>
+	
+	<select id="orderAllList" resultType="userOrderVO">
+		select O1.O_NUM, O1.ID,
+				O2.F_NUM, O2.R_NUM, O2.O_DATE, O2.O_COUNT, O2.O_PRICE,
+				F.F_NAME, F.F_PRICE
+		from ORDERS_NUM O1, ORDERS O2, FOOD F
+		where O1.O_NUM = O2.O_NUM
+		and O2.F_NUM = F.F_NUM
+		order by O2.O_DATE DESC
+	</select>
+	
+	<update id="setUserLevel" parameterType="String">
+		update USERS
+		set USER_LEVEL=1
+		where ID=#{id}
+	</update>
+	
+</mapper>
+

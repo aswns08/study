@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cooks.dao.RestaurantDao">
+
+	<select id="getRestaurant" resultType="restaurantFileListVO">
+		select R1.R_NUM, R1.R_NAME, R1.ID, R1.R_ADDRESS, R1.R_PHONE, R1.R_FOODTYPE, R1.R_INFO,
+				R2.FILE_NUM, R2.ORIGINFILENAME, R2.SAVEFILENAME, R2.FILESIZE
+		FROM RESTAURANT R1 LEFT OUTER JOIN RESTAURANT_FILELIST R2
+		ON R1.R_NUM = R2.R_NUM
+		order by R1.r_name
+	</select>
+
+	<insert id="addRestaurant" parameterType="restaurantVO">
+		insert into RESTAURANT values(#{r_Num}, #{r_Name}, #{id}, #{r_Address}, #{r_Phone}, #{r_Foodtype}, #{r_Info})
+	</insert>
+	
+	<insert id="addFileUpload" parameterType="restaurantFileVO">
+		insert into RESTAURANT_FILELIST values(resfile_num_seq.nextval, #{originFileName}, #{saveFileName}, #{fileSize}, #{r_Num})
+	</insert>
+	
+	<select id="getRestaurantCount" resultType="Integer">
+		select count(*) from RESTAURANT
+	</select>
+	
+	<select id="rNumcheck" parameterType="String" resultType="String">
+		SELECT R_NUM FROM RESTAURANT WHERE R_NUM=#{r_Num}
+	</select>
+	
+	<select id="rIdcheck" parameterType="String" resultType="String">
+		SELECT ID FROM USERS WHERE ID=#{id}
+	</select>
+	
+	<select id="restaurantTypeList" parameterType="String" resultType="restaurantFileListVO">
+		select r.*, l.saveFileName 
+		from RESTAURANT r left outer join RESTAURANT_FILELIST l on r.r_num=l.r_num
+		where r.r_foodtype = #{r_food_type}	
+	</select>
+	
+	<delete id="restaurantDelete" parameterType="String">
+		DELETE FROM RESTAURANT WHERE R_NUM=#{r_Num}
+	</delete>
+	
+	<select id="getResOwner" parameterType="String" resultType="String">
+		SELECT ID FROM RESTAURANT WHERE R_NUM=#{r_Num}
+	</select>
+	
+	<select id="getResNum" parameterType="String" resultType="String">
+		SELECT R_NUM FROM RESTAURANT WHERE ID=#{ownerID}
+	</select>
+	
+	
+
+</mapper>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cooks.dao.QNADao">
+	
+	<select id="getQnACount" parameterType="Integer" resultType="Integer">
+		select count(*) from QNA where f_Num=#{f_num}
+	</select>
+	
+	<select id="getQnAList" parameterType="Integer" resultType="qnaVO">
+		select Q.q_Num, Q.id, Q.q_Title, Q.q_Date, Q.q_Dept, Q.f_Num,
+			   U.name
+		from QNA Q LEFT OUTER JOIN USERS U ON Q.ID = U.ID
+		where f_Num=#{f_num} 
+		order by q_Position desc, q_Dept
+	</select>
+
+
+	<select id="getMyQNACount" parameterType="String" resultType="Integer">
+		select count(*) from QNA where ID=#{id}
+	</select>
+
+	
+	<select id="getMyQNA" parameterType="String" resultType="qnaVO">
+		select a.q_Num, a.id, a.q_Title, a.q_Date, a.q_Dept, a.q_Position, a.f_Num
+		from QNA q inner join QNA a
+		on q.ID=#{id} and q.q_Position=a.q_Position
+		order by q_Position desc, q_Dept
+	</select>
+	
+	
+	<select id="getMyAllQNACount" resultType="Integer">
+		select count(*) from QNA
+	</select>
+	
+	<select id="getMyAllQNA" resultType="qnaVO">
+		select q_Num, id, q_Title, q_Date, q_Dept, q_Position, f_Num
+		from QNA
+		order by q_Position desc, q_Dept
+	</select>
+	
+	<select id="getMyOwnerQNACount" resultType="Integer">
+		select count(*) from QNA
+	</select>
+	
+	<select id="getMyOwnerQNA" resultType="qnaVO">
+		select q.q_Num, q.id, q.q_Title, q.q_Date, q.q_Dept, q.q_Position, q.f_Num
+		from QNA q
+		where q.f_Num in (select distinct f.f_num 
+                		  from restaurant r left outer join food f
+               			  on f.r_num = #{resNum})
+        order by q_Position desc, q_Dept       			  
+	</select>
+	
+	
+	
+	<insert id="qnaWrite" parameterType="qnaVO">
+		insert into QNA values(qna_seq.nextval,#{id},#{q_Title},#{q_Content},sysdate,0,qna_seq.currval,0,#{f_Num})
+	</insert>
+	
+	<select id="qnaContent" parameterType="Integer" resultType="qnaVO">
+		select Q.q_Num, Q.id, Q.q_Title, REPLACE(Q.q_Content, CHR(10), '&lt;br /&gt;') AS q_Content, Q.q_Date, Q.q_Position, Q.q_Groupid, Q.f_Num, U.name
+		from QNA Q LEFT OUTER JOIN USERS U ON Q.ID = U.ID
+		where q_Num=#{q_Num}
+	</select>
+	
+	<select id="getQNAUpdate" parameterType="Integer" resultType="qnaVO">
+		select id, q_Num, q_Title, q_Content from QNA where q_Num=#{q_Num}	
+	</select>
+	
+	<update id="qnaUpdate" parameterType="qnaVO">
+		update QNA
+		set q_Title=#{q_Title}, q_Content=#{q_Content}
+		where q_Num=#{q_Num}
+	</update>
+	
+	<delete id="qnaDelete" parameterType="Integer">
+		delete from QNA where q_Num=#{q_Num}
+	</delete>
+	
+	<delete id="qnaDelete1" parameterType="Integer">
+		delete 
+		from QNA 
+		where q_Position=(select q_Position from QNA where q_Num=#{q_Num})
+		and q_Dept=1
+	</delete>
+	
+	<insert id="qnaReply" parameterType ="qnaVO" >
+		insert into QNA values(qna_seq.nextval,#{id},#{q_Title},#{q_Content},sysdate,#{q_Dept},#{q_Position},0,#{f_Num})
+	</insert>
+	
+	<update id="qnaSetG_id" parameterType="Integer">
+		update QNA
+		set q_Groupid=1
+		where q_Num=#{qNum}
+	</update>
+	
+	<update id="qnaGroupIdDownSet" parameterType="Integer">
+		update QNA
+		set q_Groupid=0
+		where q_Num=(select q_Position from QNA where q_Num=#{q_Num})
+	</update>
+	
+</mapper>	
